@@ -106,12 +106,18 @@ def logview(request, userid):
     logtype = request.GET.get("logtype", 'dns')
     deltype = request.GET.get("del")
     search = clean_search(request.GET.get("search",''))
+
     if deltype == 'dns':
-        DNSLog.objects.filter(user=user).delete()
+        if request.GET.get("csrf") == request.COOKIES.get('csrftoken'):
+            DNSLog.objects.filter(user=user).delete()
         return HttpResponseRedirect('/?logtype=dns')
+
+
     if deltype == 'web':
-        WebLog.objects.filter(user=user).delete()
+        if request.GET.get("csrf") == request.COOKIES.get('csrftoken'):
+            WebLog.objects.filter(user=user).delete()
         return HttpResponseRedirect('/?logtype=web')
+
     if logtype == 'dns':
         vardict['logtype'] = logtype
         dnspage = getpage(request.GET.get("dnspage", 1))
