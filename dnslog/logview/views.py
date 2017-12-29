@@ -135,6 +135,7 @@ def logview(request, userid):
             dnslogs = paginator.page(paginator.num_pages)
         vardict['search'] = search
         vardict['dnspage'] = dnspage
+        vardict['no_result'] = len(db_query) == 0
         vardict['pagerange'] = paginator.page_range
         vardict['dnslogs'] = dnslogs
         vardict['numpages'] = paginator.num_pages
@@ -155,6 +156,7 @@ def logview(request, userid):
             weblogs = paginator.page(paginator.num_pages)
         vardict['search'] = search
         vardict['webpage'] = webpage
+        vardict['no_result'] = len(db_query) == 0
         vardict['pagerange'] = paginator.page_range
         vardict['weblogs'] = weblogs
         vardict['numpages'] = paginator.num_pages

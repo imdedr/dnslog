@@ -93,6 +93,7 @@
 
             </table>
 
+            {% if not no_result %}
             <div class="row">
             <div class="col-md-10">
             <nav aria-label="Page navigation" style="padding-left: 20px;">
@@ -138,6 +139,13 @@
                     <a class="btn btn-danger" href="/?del=dns&csrf={{csrf_token}}" role="button">Clear</a>
                 </div>
             </div>
+            {% else %}
+            <div class="row" style="text-align: center; padding-top: 50px; height: 100px;">
+              <div class="col-md-12">
+                No Data
+              </div>
+            </div>
+            {% endif %}
 
 
 
@@ -193,7 +201,7 @@
 
             </table>
 
-
+            {% if not no_result %}
             <div class="row">
             <div class="col-md-10">
             <nav class="page navigation" style="padding-left: 20px;">
@@ -240,6 +248,13 @@
                     <a class="btn btn-danger" href="/?del=web&csrf={{csrf_token}}" role="button">Clear</a>
                 </div>
             </div>
+            {% else %}
+            <div class="row" style="text-align: center; padding-top: 50px; height: 100px;">
+              <div class="col-md-12">
+                No Data
+              </div>
+            </div>
+            {% endif %}
 
         </div>
 
