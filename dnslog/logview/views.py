@@ -9,6 +9,7 @@ from django import forms
 from models import *
 from dnslog import settings
 from django.contrib.auth import logout
+import string
 
 
 def index(request):
@@ -89,12 +90,19 @@ def getpage(p):
         page = 1
     return page
 
+def clean_search(s):
+    allow_chr = string.ascii_letters + string.digits + '.'
+    for c in s:
+        if c not in allow_chr:
+            return ''
+    return s
 
 def logview(request, userid):
     user = User.objects.filter(id__exact=userid)[0]
     vardict = {}
     logtype = request.GET.get("logtype", 'dns')
     deltype = request.GET.get("del")
+    search = clean_search(request.GET.get("search",''))
     if deltype == 'dns':
         DNSLog.objects.filter(user=user).delete()
         return HttpResponseRedirect('/?logtype=dns')
@@ -104,12 +112,19 @@ def logview(request, userid):
     if logtype == 'dns':
         vardict['logtype'] = logtype
         dnspage = getpage(request.GET.get("dnspage", 1))
-        paginator = Paginator(DNSLog.objects.filter(user=user).order_by('-id'), 10)
+
+        if search != '':
+            db_query = DNSLog.objects.filter(user=user, host__icontains=search).order_by('-id')
+        else:
+            db_query = DNSLog.objects.filter(user=user).order_by('-id')
+
+        paginator = Paginator(db_query, 10)
         try:
             dnslogs = paginator.page(dnspage)
         except(EmptyPage, InvalidPage, PageNotAnInteger):
             dnspage = paginator.num_pages
             dnslogs = paginator.page(paginator.num_pages)
+        vardict['search'] = search
         vardict['dnspage'] = dnspage
         vardict['pagerange'] = paginator.page_range
         vardict['dnslogs'] = dnslogs
@@ -117,12 +132,19 @@ def logview(request, userid):
     elif logtype == 'web':
         vardict['logtype'] = logtype
         webpage = getpage(request.GET.get("webpage", 1))
-        paginator = Paginator(WebLog.objects.filter(user=user).order_by('-id'), 10)
+
+        if search != '':
+            db_query = WebLog.objects.filter(user=user, host__icontains=search).order_by('-id')
+        else:
+            db_query = WebLog.objects.filter(user=user).order_by('-id')
+
+        paginator = Paginator(db_query, 10)
         try:
             weblogs = paginator.page(webpage)
         except(EmptyPage, InvalidPage, PageNotAnInteger):
             webpage = paginator.num_pages
             weblogs = paginator.page(paginator.num_pages)
+        vardict['search'] = search
         vardict['webpage'] = webpage
         vardict['pagerange'] = paginator.page_range
         vardict['weblogs'] = weblogs

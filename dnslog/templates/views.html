@@ -35,6 +35,11 @@
         <a class="nav-link" href="/?logtype=web">HTTP Request</a>
       </li>
     </ul>
+    <form method="get" class="form-inline my-2 my-lg-0">
+      <input type="hidden" name="logtype" value="{{logtype}}">
+      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="search" style="color: #FFF;" value="{{search}}">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
     <span class="navbar-text">
         <a class="nav-link" href="/logout/?csrf={{ csrf_token }}">Logout</a>
     </span>
@@ -98,7 +103,7 @@
 
                 <li class="page-item">
 
-                  <a class="page-link" href="/?logtype=dns&dnspage={{dnspage | add:-1}}" aria-label="Previous">
+                  <a class="page-link" href="/?logtype=dns&dnspage={{dnspage | add:-1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" aria-label="Previous">
 
                     <span aria-hidden="true">Previous</span>
 
@@ -110,7 +115,8 @@
 
                 {% for range in pagerange %}
 
-                <li class="page-item {% ifequal range dnspage%}active{% endifequal%}"><a class="page-link" href="/?logtype=dns&dnspage={{range}}">{{range}}</a></li>
+                <li class="page-item {% ifequal range dnspage%}active{% endifequal%}"><a class="page-link" href="/?logtype=dns&dnspage={{range}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}
+">{{range}}</a></li>
 
                 {% endfor %}
 
@@ -118,7 +124,7 @@
 
                 <li class="page-item">
 
-                  <a class="page-link" href="/?logtype=dns&dnspage={{dnspage|add:1}}" aria-label="Next">
+                  <a class="page-link" href="/?logtype=dns&dnspage={{dnspage|add:1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" aria-label="Next">
 
                     <span aria-hidden="true">Next</span>
 
@@ -202,7 +208,7 @@
 
                 <li class="page-item">
 
-                  <a class="page-link" href="/?logtype=web&webpage={{webpage | add:-1}}" aria-label="Previous">
+                  <a class="page-link" href="/?logtype=web&webpage={{webpage | add:-1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" aria-label="Previous">
 
                     <span aria-hidden="true">Previous</span>
 
@@ -214,7 +220,7 @@
 
                 {% for range in pagerange %}
 
-                <li class="page-item {% ifequal range webpage%}active{% endifequal%}"><a class="page-link" href="/?logtype=web&webpage={{range}}">{{range}}</a></li>
+                <li class="page-item {% ifequal range webpage%}active{% endifequal%}"><a class="page-link" href="/?logtype=web&webpage={{range}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}">{{range}}</a></li>
 
                 {% endfor %}
 
@@ -222,7 +228,7 @@
 
                 <li class="page-item">
 
-                  <a class="page-link" href="/?logtype=web&webpage={{webpage|add:1}}" aria-label="Next">
+                  <a class="page-link" href="/?logtype=web&webpage={{webpage|add:1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" aria-label="Next">
 
                     <span aria-hidden="true">Next</span>
 
