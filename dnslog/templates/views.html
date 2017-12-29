@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="zh-tw">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Record</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.0.0-beta.4/dist/css/bootstrap-material-design.min.css" integrity="sha384-R80DC0KVBO4GSTw+wZ5x2zn2pu4POSErBkf8/fSFhPXHxvHJydT0CSgAP2Yo2r4I" crossorigin="anonymous">
+
+    <link href="/static/main.css" rel="stylesheet">
+
+    
+
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">DNSLog</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item {% ifequal logtype 'dns'%}active{% endifequal%}">
+        <a class="nav-link" href="/?logtype=dns">DNS Query</a>
+      </li>
+      <li class="nav-item {% ifequal logtype 'web'%}active{% endifequal%}">
+        <a class="nav-link" href="/?logtype=web">HTTP Request</a>
+      </li>
+    </ul>
+    <span class="navbar-text">
+        <a class="nav-link" href="/logout/?csrf={{ csrf_token }}">Logout</a>
+    </span>
+  </div>
+</nav>
+
+    <div class="container">
+
+
+        {% ifequal logtype 'dns'%}
+
+        <div class="bs" data-example-id="hoverable-table" style="width:100%; overflow:scroll;">
+
+            <table class="table table-hover">
+
+              <thead>
+
+                <tr>
+
+                  <th>#</th>
+
+                  <th>Host</th>
+
+                  <th>Type</th>
+
+                  <th>Date</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {% for dnslog in dnslogs %}
+
+                <tr>
+
+                <th scope="row">{{dnslog.id}}</th>
+
+                <td>{{ dnslog.host }}</td>
+
+                <td>{{ dnslog.type }}</td>
+
+                <td>{{ dnslog.log_time  | date:'Y-m-d H:i:s' }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+              </tbody>
+
+            </table>
+
+            <div class="row">
+            <div class="col-md-10">
+            <nav aria-label="Page navigation" style="padding-left: 20px;">
+
+              <ul class="pagination">
+
+                {% ifnotequal dnspage 1%}
+
+                <li class="page-item">
+
+                  <a class="page-link" href="/?logtype=dns&dnspage={{dnspage | add:-1}}" aria-label="Previous">
+
+                    <span aria-hidden="true">Previous</span>
+
+                  </a>
+
+                </li>
+
+                {% endifnotequal%}
+
+                {% for range in pagerange %}
+
+                <li class="page-item {% ifequal range dnspage%}active{% endifequal%}"><a class="page-link" href="/?logtype=dns&dnspage={{range}}">{{range}}</a></li>
+
+                {% endfor %}
+
+                {% ifnotequal dnspage numpages%}
+
+                <li class="page-item">
+
+                  <a class="page-link" href="/?logtype=dns&dnspage={{dnspage|add:1}}" aria-label="Next">
+
+                    <span aria-hidden="true">Next</span>
+
+                  </a>
+
+                </li>
+
+                {% endifnotequal%}
+
+              </ul>
+
+            </nav>
+            </div>
+                <div class="col-md-2" style="text-align:right">
+                    <a class="btn btn-danger" href="/?del=dns&csrf={{csrf_token}}" role="button">Clear</a>
+                </div>
+            </div>
+
+
+
+        </div>
+
+        {% endifequal%}
+
+        {% ifequal logtype 'web'%}
+
+        <div class="bs" data-example-id="hoverable-table" style="width:100%; overflow:scroll;">
+
+            <table class="table table-hover">
+
+              <thead>
+
+                <tr>
+
+                  <th>#</th>
+
+                  <th>Path</th>
+
+                  <th>IP</th>
+
+                  <th>User-Agent</th>
+
+                  <th>Date</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {% for weblog in weblogs %}
+
+                <tr>
+
+                <th scope="row">{{weblog.id}}</th>
+
+                <td>{{ weblog.path }}</td>
+
+                <td><a href="https://ipinfo.io/{{ weblog.remote_addr }}" target="_blank">{{ weblog.remote_addr }}</a></td>
+
+                <td>{{ weblog.http_user_agent }}</td>
+
+                <td>{{ weblog.log_time|date:'Y-m-d H:i:s' }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+              </tbody>
+
+            </table>
+
+
+            <div class="row">
+            <div class="col-md-10">
+            <nav class="page navigation" style="padding-left: 20px;">
+
+              <ul class="pagination">
+
+                {% ifnotequal webpage 1%}
+
+                <li class="page-item">
+
+                  <a class="page-link" href="/?logtype=web&webpage={{webpage | add:-1}}" aria-label="Previous">
+
+                    <span aria-hidden="true">Previous</span>
+
+                  </a>
+
+                </li>
+
+                {% endifnotequal%}
+
+                {% for range in pagerange %}
+
+                <li class="page-item {% ifequal range webpage%}active{% endifequal%}"><a class="page-link" href="/?logtype=web&webpage={{range}}">{{range}}</a></li>
+
+                {% endfor %}
+
+                {% ifnotequal webpage numpages%}
+
+                <li class="page-item">
+
+                  <a class="page-link" href="/?logtype=web&webpage={{webpage|add:1}}" aria-label="Next">
+
+                    <span aria-hidden="true">Next</span>
+
+                  </a>
+
+                </li>
+
+                {% endifnotequal%}
+
+              </ul>
+
+            </nav>
+            </div>
+                <div class="col-md-2" style="text-align:right">
+                    <a class="btn btn-danger" href="/?del=web&csrf={{csrf_token}}" role="button">Clear</a>
+                </div>
+            </div>
+
+        </div>
+
+        {% endifequal%}
+
+        <div class="bs" data-example-id="hoverable-table" style="background: #FFF; margin-bottom: 5rem">
+<p style="width:100%; overflow:scroll;">
+Your subdomain:<br>
+&nbsp;&nbsp;{{userdomain}} 
+<br><br>
+API:<br>
+&nbsp;&nbsp;Endpoint:/api/{logtype}/{{udomain}}/{hashstr}/
+<br>
+&nbsp;&nbsp;logtype: [dns, request]
+<br>
+&nbsp;&nbsp;hashstr: domain
+<br><br>
+Example:
+<br>
+&nbsp;&nbsp;Check c8763.{{userdomain}}<br>
+&nbsp;&nbsp;API: /api/dns/{{udomain}}/c8763/
+</p>
+        </div>
+
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-material-design@4.0.0-beta.4/dist/js/bootstrap-material-design.js" integrity="sha384-3xciOSDAlaXneEmyOo0ME/2grfpqzhhTcM4cE32Ce9+8DW/04AGoTACzQpphYGYe" crossorigin="anonymous"></script>
+<script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+
+</body>
+
+</html>
