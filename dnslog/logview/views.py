@@ -134,7 +134,7 @@ def logview(request, userid):
         webpage = getpage(request.GET.get("webpage", 1))
 
         if search != '':
-            db_query = WebLog.objects.filter(user=user, host__icontains=search).order_by('-id')
+            db_query = WebLog.objects.filter(user=user, path__icontains=search).order_by('-id')
         else:
             db_query = WebLog.objects.filter(user=user).order_by('-id')
 
