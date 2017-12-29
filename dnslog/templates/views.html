@@ -99,11 +99,11 @@
 
               <ul class="pagination">
 
-                {% ifnotequal dnspage 1%}
+                
 
-                <li class="page-item">
+                <li class="page-item" {% ifequal dnspage 1%}disabled{% endifequal%}>
 
-                  <a class="page-link" href="/?logtype=dns&dnspage={{dnspage | add:-1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" aria-label="Previous">
+                  <a class="page-link" {% ifnotequal dnspage 1%} href="/?logtype=dns&dnspage={{dnspage | add:-1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" {% endifnotequal%} aria-label="Previous">
 
                     <span aria-hidden="true">Previous</span>
 
@@ -111,7 +111,7 @@
 
                 </li>
 
-                {% endifnotequal%}
+                
 
                 {% for range in pagerange %}
 
@@ -120,19 +120,15 @@
 
                 {% endfor %}
 
-                {% ifnotequal dnspage numpages%}
+                
 
-                <li class="page-item">
+                <li class="page-item" {% ifequal dnspage numpages%}disabled{% endifequal%}>
 
-                  <a class="page-link" href="/?logtype=dns&dnspage={{dnspage|add:1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" aria-label="Next">
-
+                  <a class="page-link" {% ifnotequal dnspage numpages%} href="/?logtype=dns&dnspage={{dnspage|add:1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" {% endifnotequal%} aria-label="Next">
                     <span aria-hidden="true">Next</span>
-
                   </a>
 
                 </li>
-
-                {% endifnotequal%}
 
               </ul>
 
@@ -204,11 +200,11 @@
 
               <ul class="pagination">
 
-                {% ifnotequal webpage 1%}
+                
 
-                <li class="page-item">
+                <li class="page-item" {% ifequal webpage 1%}disabled{% endifequal%}>
 
-                  <a class="page-link" href="/?logtype=web&webpage={{webpage | add:-1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" aria-label="Previous">
+                  <a class="page-link" {% ifnotequal webpage 1%} href="/?logtype=web&webpage={{webpage | add:-1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" {% endifnotequal%} aria-label="Previous">
 
                     <span aria-hidden="true">Previous</span>
 
@@ -216,7 +212,7 @@
 
                 </li>
 
-                {% endifnotequal%}
+                
 
                 {% for range in pagerange %}
 
@@ -224,19 +220,17 @@
 
                 {% endfor %}
 
-                {% ifnotequal webpage numpages%}
+                
 
-                <li class="page-item">
+                <li class="page-item" {% ifequal webpage numpages%}disabled{% endifequal%}>
 
-                  <a class="page-link" href="/?logtype=web&webpage={{webpage|add:1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" aria-label="Next">
+                  <a class="page-link" {% ifnotequal webpage numpages%} href="/?logtype=web&webpage={{webpage|add:1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" {% endifnotequal%} aria-label="Next">
 
                     <span aria-hidden="true">Next</span>
 
                   </a>
 
                 </li>
-
-                {% endifnotequal%}
 
               </ul>
 
