@@ -101,7 +101,7 @@
 
                 
 
-                <li class="page-item" {% ifequal dnspage 1%}disabled{% endifequal%}>
+                <li class="page-item" {% ifequal dnspage 1%}disabled style="color:#909090;"{% endifequal%}>
 
                   <a class="page-link" {% ifnotequal dnspage 1%} href="/?logtype=dns&dnspage={{dnspage | add:-1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" {% endifnotequal%} aria-label="Previous">
 
@@ -122,7 +122,7 @@
 
                 
 
-                <li class="page-item" {% ifequal dnspage numpages%}disabled{% endifequal%}>
+                <li class="page-item" {% ifequal dnspage numpages%}disabled style="color:#909090;" {% endifequal%}>
 
                   <a class="page-link" {% ifnotequal dnspage numpages%} href="/?logtype=dns&dnspage={{dnspage|add:1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" {% endifnotequal%} aria-label="Next">
                     <span aria-hidden="true">Next</span>
@@ -202,7 +202,7 @@
 
                 
 
-                <li class="page-item" {% ifequal webpage 1%}disabled{% endifequal%}>
+                <li class="page-item" {% ifequal webpage 1%}disabled style="color:#909090;"{% endifequal%}>
 
                   <a class="page-link" {% ifnotequal webpage 1%} href="/?logtype=web&webpage={{webpage | add:-1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" {% endifnotequal%} aria-label="Previous">
 
@@ -222,7 +222,7 @@
 
                 
 
-                <li class="page-item" {% ifequal webpage numpages%}disabled{% endifequal%}>
+                <li class="page-item" {% ifequal webpage numpages%}disabled style="color:#909090;" {% endifequal%}>
 
                   <a class="page-link" {% ifnotequal webpage numpages%} href="/?logtype=web&webpage={{webpage|add:1}}{% ifnotequal search ''%}&search={{search}}{% endifnotequal%}" {% endifnotequal%} aria-label="Next">
 
