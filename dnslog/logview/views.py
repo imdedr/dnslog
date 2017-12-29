@@ -91,11 +91,14 @@ def getpage(p):
     return page
 
 def clean_search(s):
-    allow_chr = string.ascii_letters + string.digits + '.'
+    allow_chr = string.ascii_letters + string.digits + '. '
+    result = ""    
     for c in s:
-        if c not in allow_chr:
-            return ''
-    return s
+        if c in allow_chr:
+            result += c
+        else:
+            result += ' '
+    return result
 
 def logview(request, userid):
     user = User.objects.filter(id__exact=userid)[0]
