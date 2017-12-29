@@ -45,8 +45,8 @@ def index(request):
 
 
 class UserForm(forms.Form):
-    username = forms.CharField(label='用户名', max_length=128)
-    password = forms.CharField(label='密  码', widget=forms.PasswordInput())
+    username = forms.CharField(label='Username', max_length=128)
+    password = forms.CharField(label='Password', widget=forms.PasswordInput())
 
 
 def login(request):
