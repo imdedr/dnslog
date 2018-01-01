@@ -34,6 +34,9 @@
       <li class="nav-item {% ifequal logtype 'web'%}active{% endifequal%}">
         <a class="nav-link" href="/?logtype=web">HTTP Request</a>
       </li>
+      <li class="nav-item {% ifequal logtype 'sentry'%}active{% endifequal%}">
+        <a class="nav-link" href="/?logtype=sentry">Sentry</a>
+      </li>
     </ul>
     <form method="get" class="form-inline my-2 my-lg-0" style="padding-left: .5321rem; padding-right: .5321rem;">
       <input type="hidden" name="logtype" value="{{logtype}}">

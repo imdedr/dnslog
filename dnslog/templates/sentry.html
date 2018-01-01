@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="zh-tw">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Record</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.0.0-beta.4/dist/css/bootstrap-material-design.min.css" integrity="sha384-R80DC0KVBO4GSTw+wZ5x2zn2pu4POSErBkf8/fSFhPXHxvHJydT0CSgAP2Yo2r4I" crossorigin="anonymous">
+
+
+    <link href="/static/main.css" rel="stylesheet">
+
+    
+
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">DNSLog</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item {% ifequal logtype 'dns'%}active{% endifequal%}">
+        <a class="nav-link" href="/?logtype=dns">DNS Query</a>
+      </li>
+      <li class="nav-item {% ifequal logtype 'web'%}active{% endifequal%}">
+        <a class="nav-link" href="/?logtype=web">HTTP Request</a>
+      </li>
+      <li class="nav-item {% ifequal logtype 'sentry'%}active{% endifequal%}">
+        <a class="nav-link" href="/?logtype=sentry">Sentry</a>
+      </li>
+    </ul>
+    <span class="navbar-text">
+        <a class="nav-link" href="/logout/?csrf={{ csrf_token }}">Logout</a>
+    </span>
+  </div>
+</nav>
+
+    <div class="container" id="app">
+
+        <div class="bs" data-example-id="hoverable-table" style="width:100%; overflow:scroll;">
+
+            <button v-if="sentry_state==false"  type="button" class="btn btn-outline-primary" v-on:click="startSentry">Start Sentry</button>
+            <button v-if="sentry_state==true" type="button" class="btn btn-outline-warning" v-on:click="stopSentry">Stop Sentry</button>
+
+        </div>
+        
+        <div class="bs" style="width:100%; overflow:scroll;">
+
+{% verbatim %}
+<div v-if="success_msg!=''"  class="alert alert-success" role="alert">
+     {{success_msg}}
+</div>
+<div v-if="error_msg!=''" class="alert alert-danger" role="alert">
+     {{error_msg}}
+</div>
+{% endverbatim %}
+	    <div class="form-row align-items-center">
+              <div class="col-auto">Add Sentry: </div>
+	      <div class="col-auto">
+	        <input type="text" class="form-control" placeholder="Hashstr" v-model="add_hashstr">
+	      </div>
+	      <div class="col-auto">
+                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" v-model="add_type">
+                    <option value="dns">DNS</option>
+                    <option value="web">WEB</option>
+                </select>
+	      </div>
+	      <div class="col-auto">
+                  <button type="button" class="btn btn-outline-primary" v-on:click="addSentry">Add</button>
+	      </div>
+              <div class="col-auto">
+                  Example: {hashstr}.{{userdomain}}
+              </div>
+	    </div>
+
+        </div>
+        {% verbatim %} 
+        <div class="bs" style="width:100%; overflow:scroll;">
+
+            <table class="table table-hover">
+
+              <thead>
+
+                <tr>
+
+                  <th>#</th>
+
+                  <th>Hashstr</th>
+
+                  <th>Type</th>
+
+                  <th style="width: 100px;">State</th>
+
+                  <th style="width: 150px;">Operate</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr  v-for="(t,i) in targets">
+
+                    <th scope="row">{{i+1}}</th>
+
+                    <td>{{ t.hashstr }}</td>
+
+                    <td>{{ t.type }}</td>
+
+                    <td>{{ t.state }}</td>
+
+                    <td><button type="button" class="btn btn-danger" v-on:click="removeSentry(t.hashstr)">Remove</button></td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+        </div>
+        {% endverbatim %}
+
+        <div class="bs" data-example-id="hoverable-table" style="background: #FFF; margin-bottom: 5rem">
+<p style="width:100%; overflow:scroll;">
+設定是儲存在當前的瀏覽器, 並不是儲存在伺服器資料庫中.
+</p>
+        </div>
+
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-material-design@4.0.0-beta.4/dist/js/bootstrap-material-design.js" integrity="sha384-3xciOSDAlaXneEmyOo0ME/2grfpqzhhTcM4cE32Ce9+8DW/04AGoTACzQpphYGYe" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function() { $('body').bootstrapMaterialDesign(); });
+
+    function getStorage() {
+        try{
+            targets = JSON.parse(localStorage.getItem('targets'));
+            if( targets == null ) {
+               return [];
+            }
+            for( i=0; i<targets.length; i++ ) {
+               _t = targets[i];
+               if( !RegExp("^([a-zA-Z0-9\.])+$").test(_t.hashstr) ){
+                  return [];
+               }
+               if( _t.state != 'waiting' ) {
+                  _t.state = 'waiting';
+               }
+               if( _t.type != 'dns' && _t.type != 'web' ) {
+                  return [];
+               }
+            }
+         } catch( ex ) {
+            return [];
+         }
+         return targets;
+    }
+ 
+    var app = new Vue({
+        el: '#app',
+        data: {
+            st: null,
+            success_msg: '',
+            error_msg: '',
+            sentry_state: false,
+            add_hashstr: '',
+            add_type: 'dns',
+            targets: getStorage(),
+        },
+        methods: {
+            findHashstr: function( hashstr ){
+                for(i=0; i<this.targets.length; i++){
+                    if( this.targets[i].hashstr == hashstr ){
+                        return i;
+                    }
+                }
+                return -1;
+            },
+            addSentry: function(){
+                this.success_msg = '';
+                if( this.add_hashstr == '' ){
+                    this.error_msg = "Hashstr 不能為空";
+                    return;
+                }
+
+                if( !RegExp("^([a-zA-Z0-9\.])+$").test(this.add_hashstr) ){
+                    this.error_msg = "Hashstr 僅能為 a-zA-Z0-9.";
+                    return;
+                }
+
+                this.targets.push( { hashstr:this.add_hashstr, type:this.add_type, state:'waiting' }  );
+                this.add_hashstr = '';
+                this.error_msg = '';
+                this.success_msg = '新增成功';
+                localStorage.setItem('targets', JSON.stringify(this.targets));
+            },
+            removeSentry: function( hashstr ){
+                t_index = this.findHashstr(hashstr);
+                if( t_index != -1 ){
+                    this.targets.splice(t_index, 1);
+                    localStorage.setItem('targets', JSON.stringify(this.targets));
+                }
+            },
+            startSentry: function(){
+                this.sentry_state = true;
+                this.st = setTimeout(this.checkSentry, 100, 0);
+            },
+            stopSentry: function(){
+                this.sentry_state = false;
+                clearTimeout(this.st)
+            },
+            checkSentry: function( t_index ){
+                if( this.sentry_state == false ) {
+                    return;
+                }
+                if( t_index >= this.targets.length ) {
+                    this.st = setTimeout(this.checkSentry, 100, 0);
+                    return;
+                }
+
+                _t = this.targets[t_index];
+                if( _t.state == "Found" ){
+                    t_next = t_index+1;
+                    if( t_index == this.targets.length -1 ){
+                        t_next = 0;
+                    }
+                    this.st = setTimeout(this.checkSentry, 100, t_next);
+                    return;
+                }
+
+                _t.state = "Checking";
+                $.ajax({url:"/api/"+_t.type+"/{{udomain}}/"+_t.hashstr+"/", method: "GET"})
+                .done( function(resp){
+                    if( resp == "True" ){
+                        _t.state = "Found";
+                        notifyUser( "Found: " + _t.hashstr );
+                    } else {
+                        _t.state = "waiting";
+                    }
+                }.bind(this) )
+                .fail(function(_t){
+                    _t.state = "Fail";
+                }.bind(this, _t))
+                .always(function(t_index){
+                    t_next = t_index+1;
+                    if( t_index == this.targets.length -1 ){
+                        t_next = 0;
+                    }
+                    this.st = setTimeout(this.checkSentry, 1000, t_next);
+                }.bind(this, t_index));
+            }
+        }
+    });
+
+try {
+  if (Notification.permission === "denied") {
+      console.log(
+          "通知功能已被你封鎖"
+      );
+  } else if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+} catch( ex ) {}
+
+function notifyUser( text ) {
+
+    console.log(text);
+    try {
+        if (!Notification) {
+          console.log('Desktop notifications not available in your browser. Try Chromium.'); 
+          return;
+        }
+    } catch(ex) {
+        console.log('Desktop notifications not available in your browser. Try Chromium.'); 
+        return;
+    }
+
+    if (Notification.permission === "denied") {
+        console.log(
+            "通知功能已被你封鎖"
+        );
+    } else if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    } else {
+        var notification = new Notification('DNSLog Sentry', {
+          body: text
+        });
+    }
+
+}
+
+
+</script>
+</body>
+</html>

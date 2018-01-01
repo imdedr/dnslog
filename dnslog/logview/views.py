@@ -160,6 +160,12 @@ def logview(request, userid):
         vardict['pagerange'] = paginator.page_range
         vardict['weblogs'] = weblogs
         vardict['numpages'] = paginator.num_pages
+    elif logtype == 'sentry':
+        vardict['logtype'] = logtype
+        vardict['userdomain'] = user.udomain + '.' + settings.DNS_DOMAIN
+        vardict['udomain'] = str(user.udomain)
+        vardict['admindomain'] = str(settings.ADMIN_DOMAIN)
+        return render( request,'sentry.html', vardict)
     else:
         return HttpResponseRedirect('/')
 
